@@ -38,6 +38,7 @@ import chao.makeanapp.constants.HttpConstants;
 import chao.makeanapp.httputils.OkHttpUtils;
 import chao.makeanapp.model.progress.ProgressImageView;
 import chao.makeanapp.model.progress.ProgressModelLoader;
+import chao.makeanapp.utils.SPUtils;
 
 /**
  * Created by guaju on 2017/7/24.
@@ -55,9 +56,19 @@ public class GuideActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guide);
+        if ((boolean)SPUtils.getInstance(this,"config").getSp("isfirst",false)){
+            startActivity(new Intent(GuideActivity.this, SplashActivity.class));
+            return;
+        }
         initView();
         initData();
         initEvent();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        this.finish();
     }
 
     private void initEvent() {
@@ -131,15 +142,10 @@ public class GuideActivity extends AppCompatActivity implements View.OnClickList
                                 @Override
                                 public void run() {
                                     updateFace();
-
                                 }
                             });
-
                         }
-
-
                     }
-
                 }
             }
         });
@@ -170,21 +176,18 @@ public class GuideActivity extends AppCompatActivity implements View.OnClickList
         firstIv.setImageResource(R.drawable.selected);
         GuideAdapter guideAdapter = new GuideAdapter(GuideActivity.this, lists);
         vp.setAdapter(guideAdapter);
-
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bt:
+                SPUtils.getInstance(this, "config").putSP("isfirst", true);
                 startActivity(new Intent(GuideActivity.this, SplashActivity.class));
                 break;
             default:
                 break;
-
         }
-
-
     }
 
     private static class ProgressHandler extends Handler {

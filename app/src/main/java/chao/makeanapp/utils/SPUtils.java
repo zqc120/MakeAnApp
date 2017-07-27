@@ -39,19 +39,20 @@ public class SPUtils {
     }
 
     public static Object getSp(String key, Object def) {
+        Object ss = null;
         if (sp != null) {
             if (def instanceof Integer) {
-                sp.getInt(key, (int) def);
+                ss = sp.getInt(key, (int) def);
             } else if (def instanceof Boolean) {
-                sp.getBoolean(key, (boolean) def);
+                ss = sp.getBoolean(key, (boolean) def);
             } else if (def instanceof String) {
-                sp.getString(key, (String) def);
+                ss = sp.getString(key, (String) def);
             } else if (def instanceof Float) {
-                sp.getFloat(key, (float) def);
+                ss = sp.getFloat(key, (float) def);
             } else if (def instanceof Long) {
-                sp.getLong(key, (long) def);
+                ss = sp.getLong(key, (long) def);
             }
         }
-        return null;
+        return ss;
     }
 }

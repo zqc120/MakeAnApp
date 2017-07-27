@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.TextView;
@@ -22,15 +23,47 @@ import chao.makeanapp.R;
 public class SplashActivity extends Activity {
     private TextView skip;
     int count = 0;
+    int time = 0;
+    private static final int STARTCOUNT = 10;
+    Timer timer;
+    private Thread thread;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         initView();
-        countDownTimer.start();
-        //useTime(3000);
+        //countDownTimer.start();
+        //useTimer(3000);
         //useHandler(3000);
+        useWhile(3000);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        this.finish();
+    }
+
+    private void useWhile(final int time) {
+        thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (count < time) {
+                    SystemClock.sleep(1000);
+                    count += 1000;
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (count != 4000) {
+                            startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                        }
+                    }
+                });
+            }
+        });
+        thread.start();
     }
 
     private void initView() {
@@ -38,22 +71,24 @@ public class SplashActivity extends Activity {
         skip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                count = 4000;
                 startActivity(new Intent(SplashActivity.this, MainActivity.class));
             }
         });
     }
 
-    public void useTime(final int i) {
+    void useTimer(final int time) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final Timer timer = new Timer();
+                timer = new Timer();
                 timer.schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        if (count <= i) {
+                        if (count < time) {
                             count += 1000;
                         } else {
+                            //停止
                             timer.cancel();
                             timer.purge();
                             startActivity(new Intent(SplashActivity.this, MainActivity.class));
@@ -64,8 +99,7 @@ public class SplashActivity extends Activity {
         }).start();
     }
 
-    private static final int STARTCOUNT = 10;
-    int time = 0;
+
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -81,7 +115,6 @@ public class SplashActivity extends Activity {
                     break;
                 default:
                     break;
-
             }
         }
     };
@@ -100,7 +133,6 @@ public class SplashActivity extends Activity {
         @Override
         public void onFinish() {
             startActivity(new Intent(SplashActivity.this, MainActivity.class));
-            finish();
         }
     };
 
